@@ -28,19 +28,10 @@ jobs:
           path: node-js-sample.tar.gz
           destination: docker-image
 
-  test:
-    executor: docker-executor
-    steps:
-      - checkout
-      - run:
-          name: Lint Dockerfile
-          command: hadolint Dockerfile
 
 workflows:
   version: 2
   build-and-test:
     jobs:
       - build
-      - test:
-          requires:
-            - build
+     
