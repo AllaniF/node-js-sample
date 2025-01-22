@@ -1,20 +1,46 @@
 version: 2.1
 
+executors:
+  docker-executor:
+    docker:
+      - image: cimg/node:18.17  # Use CircleCI's Node.js image for the build
+
 jobs:
   build:
-    docker:
-      - image: circleci/node:18
+    executor: docker-executor
+    steps:
+      - checkout  # Check out your code from the repository
+
+      # Enable remote Docker
+      - setup_remote_docker
+
+      # Build the Docker image
+      - run:
+          name: Build Docker Image
+          command: docker build -t node-js-sample .
+
+      # Save the Docker image as an artifact (optional)
+      - run:
+          name: Save Docker Image as Artifact
+          command: docker save node-js-sample | gzip > node-js-sample.tar.gz
+
+      - store_artifacts:
+          path: node-js-sample.tar.gz
+          destination: docker-image
+
+  test:
+    executor: docker-executor
     steps:
       - checkout
-      - setup_remote_docker:
-          version: 20.10.7
       - run:
-          name: Build Docker image
-          command: |
-            docker build -t node-js-sample .
+          name: Lint Dockerfile
+          command: hadolint Dockerfile
 
 workflows:
   version: 2
-  build_and_test:
+  build-and-test:
     jobs:
       - build
+      - test:
+          requires:
+            - build
