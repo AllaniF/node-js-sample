@@ -1,29 +1,47 @@
 version: 2.1
 
+executors:
+  docker-executor:
+    machine:
+      - image: ubuntu-2004:202106-01
+
 jobs:
   build:
-    docker:
-      - image: cimg/node:18.17 # Imagen base con Node.js
+    executor: docker-executor
     steps:
-      - checkout # Clona el repositorio
-      - setup_remote_docker # Habilita Docker en CircleCI
+      - checkout  # Check out your code from the repository
+
+      # Enable remote Docker
+      - setup_remote_docker
+
+      # Build the Docker image
       - run:
           name: Build Docker Image
-          command: docker build -t $DOCKERHUB_USERNAME/node-js-sample .
+          command: docker build -t node-js-sample .
+
+      # Run the Docker container on the correct port
       - run:
-          name: Test Docker Container
-          command: |
-            docker run -d -p 3000:3000 --name test-container $DOCKERHUB_USERNAME/node-js-sample
-            sleep 10 # Espera a que la aplicación inicie
-            curl -f http://localhost:3000 || (docker logs test-container && exit 1)
+          name: Run Docker Container
+          command: docker run -d -p 3000:3000 --name node-js-container node-js-sample
+
+     
+      # Wait for the app to start (increased sleep time to ensure app is fully started)
       - run:
-          name: Push Docker Image to DockerHub
+          name: Wait for Docker container to start
+          command: sleep 20 
+
+      # Test if the app is running and responding on the expected route
+      - run:
+          name: Test if Docker container is answering on the expected route
           command: |
-            echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
-            docker push $DOCKERHUB_USERNAME/node-js-sample
+            curl -f http://localhost:3000 || (echo 'App did not respond correctly' && exit 1)
+
+      
+
 
 workflows:
   version: 2
-  build_and_push:
+  build:
     jobs:
       - build
+     
