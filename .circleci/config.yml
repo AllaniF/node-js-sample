@@ -33,16 +33,15 @@ jobs:
           command: |
             curl -f http://localhost:3000 || (echo 'App did not respond correctly' && exit 1)
 
-       
-      # Use CircleCI Docker Orb to log in to Docker Hub
-      - docker/login:
-          username: $DOCKER_USERNAME
-          password: $DOCKER_PASSWORD
+       # Log in to DockerHub
+      - run:
+          name: Log in to Docker Hub
+          command: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
 
       # Push Docker image to Docker Hub if tests pass
       - run:
           name: Push Docker Image to Docker Hub
-          command: docker push $DOCKER_USERNAME/node-js-sample:latest
+          command: docker push fadia01/node-js-sample
 
 workflows:
   version: 2
