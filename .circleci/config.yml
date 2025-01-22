@@ -17,7 +17,7 @@ jobs:
       # Build the Docker image
       - run:
           name: Build Docker Image
-          command: docker build -t node-js-sample .
+          command: docker build -t $DOCKER_USERNAME/node-js-sample .
 
       # Run the Docker container on the correct port
       - run:
@@ -35,6 +35,17 @@ jobs:
           name: Test if Docker container is answering on the expected route
           command: |
             curl -f http://localhost:3000 || (echo 'App did not respond correctly' && exit 1)
+
+      
+      # Log in to DockerHub
+      - run:
+          name: Log in to Docker Hub
+          command: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+
+      # Push Docker image to Docker Hub if tests pass
+      - run:
+          name: Push Docker Image to Docker Hub
+          command: docker push $DOCKER_USERNAME/node-js-sample:latest
 
 
 workflows:
