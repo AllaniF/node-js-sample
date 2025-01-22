@@ -13,13 +13,6 @@ jobs:
       # Step 1: Checkout the code from the repository
       - checkout
 
-      # Step 2: Setup Docker (as the machine executor doesn't have Docker by default)
-      - run:
-          name: Install Docker
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y docker.io
-
       # Step 3: Build the Docker image
       - run:
           name: Build Docker Image
