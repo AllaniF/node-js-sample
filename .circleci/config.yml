@@ -15,7 +15,7 @@ jobs:
       # Step 3: Build the Docker image
       - run:
           name: Build Docker Image
-          command: docker build -t node-js-sample .
+          command: docker build -t $DOCKER_USERNAME/node-js-sample:latest .
 
       # Step 4: Run the Docker container on the correct port
       - run:
