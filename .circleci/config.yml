@@ -1,56 +1,29 @@
 version: 2.1
 
-executors:
-  docker-executor:
-    docker:
-      - image: cimg/node:18.17  # Use CircleCI's Node.js image for the build
-
 jobs:
   build:
-    executor: docker-executor
+    docker:
+      - image: cimg/node:18.17 # Imagen base con Node.js
     steps:
-      - checkout  # Check out your code from the repository
-
-      # Enable remote Docker
-      - setup_remote_docker
-
-      # Build the Docker image
+      - checkout # Clona el repositorio
+      - setup_remote_docker # Habilita Docker en CircleCI
       - run:
           name: Build Docker Image
-          command: docker build -t $DOCKER_USERNAME/node-js-sample .
-
-      # Run the Docker container on the correct port
+          command: docker build -t $DOCKERHUB_USERNAME/node-js-sample .
       - run:
-          name: Run Docker Container
-          command: docker run -d -p 3000:3000 --name node-js-container node-js-sample
-
-     
-      # Wait for the app to start (increased sleep time to ensure app is fully started)
-      - run:
-          name: Wait for Docker container to start
-          command: sleep 20 
-
-      # Test if the app is running and responding on the expected route
-      - run:
-          name: Test if Docker container is answering on the expected route
+          name: Test Docker Container
           command: |
-            curl -f http://localhost:3000 || (echo 'App did not respond correctly' && exit 1)
-
-      
-      # Log in to DockerHub
+            docker run -d -p 3000:3000 --name test-container $DOCKERHUB_USERNAME/node-js-sample
+            sleep 10 # Espera a que la aplicación inicie
+            curl -f http://localhost:3000 || (docker logs test-container && exit 1)
       - run:
-          name: Log in to Docker Hub
-          command: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-
-      # Push Docker image to Docker Hub if tests pass
-      - run:
-          name: Push Docker Image to Docker Hub
-          command: docker push $DOCKER_USERNAME/node-js-sample:latest
-
+          name: Push Docker Image to DockerHub
+          command: |
+            echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
+            docker push $DOCKERHUB_USERNAME/node-js-sample
 
 workflows:
   version: 2
-  build:
+  build_and_push:
     jobs:
       - build
-     
