@@ -42,8 +42,7 @@ jobs:
       - run:
           name: Push Docker Image to Docker Hub
           command: 
-            docker tag node-js-sample $DOCKER_USERNAME/node-js-sample:latest
-            docker push $DOCKER_USERNAME/node-js-sample:latest
+            docker push node-js-sample
 
 workflows:
   version: 2
