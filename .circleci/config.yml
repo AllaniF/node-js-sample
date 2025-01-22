@@ -24,11 +24,16 @@ jobs:
           name: Run Docker Container
           command: docker run -d -p 3000:3000 --name node-js-container node-js-sample
 
-       # Test if the app is running and responding on the expected route
+     
+      # Wait for the app to start (increased sleep time to ensure app is fully started)
+      - run:
+          name: Wait for Docker container to start
+          command: sleep 20 
+
+      # Test if the app is running and responding on the expected route
       - run:
           name: Test if Docker container is answering on the expected route
           command: |
-            sleep 10  # Give the app time to start
             docker exec node-js-container sh -c "curl -f http://localhost:3000 || (echo 'App did not respond correctly' && exit 1)"
 
 
