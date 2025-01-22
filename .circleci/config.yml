@@ -41,7 +41,7 @@ jobs:
       # Push Docker image to Docker Hub if tests pass
       - run:
           name: Push Docker Image to Docker Hub
-          command: docker push fadia01/node-js-sample
+          command: docker push node-js-sample
 
 workflows:
   version: 2
