@@ -25,7 +25,7 @@ jobs:
       # Step 5: Wait for the app to start (increased sleep time to ensure app is fully started)
       - run:
           name: Wait for Docker container to start
-          command: sleep 20 
+          command: sleep 10
 
       # Step 6: Test if the app is running and responding on the expected route
       - run:
@@ -42,8 +42,8 @@ jobs:
       - run:
           name: Push Docker Image to Docker Hub
           command: 
-            docker tag node-js-sample $DOCKER_USERNAME/node-js-sample
-            docker push $DOCKER_USERNAME/node-js-sample
+            docker tag node-js-sample $DOCKER_USERNAME/node-js-sample:latest
+            docker push $DOCKER_USERNAME/node-js-sample:latest
 
 workflows:
   version: 2
