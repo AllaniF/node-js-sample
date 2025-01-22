@@ -20,7 +20,7 @@ jobs:
       # Step 4: Run the Docker container on the correct port
       - run:
           name: Run Docker Container
-          command: docker run -d -p 3000:8080 --name node-js-container node-js-sample
+          command: docker run -d -p 3000:8080 --name node-js-container $DOCKER_USERNAME/node-js-sample:latest
 
       # Step 5: Wait for the app to start (increased sleep time to ensure app is fully started)
       - run:
@@ -42,7 +42,7 @@ jobs:
       - run:
           name: Push Docker Image to Docker Hub
           command: 
-            docker push node-js-sample
+            docker push $DOCKER_USERNAME/node-js-sample:latest
 
 workflows:
   version: 2
