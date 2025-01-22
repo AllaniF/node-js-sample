@@ -19,14 +19,10 @@ jobs:
           name: Build Docker Image
           command: docker build -t node-js-sample .
 
-      # Save the Docker image as an artifact (optional)
+      # Run the Docker container on the correct port
       - run:
-          name: Save Docker Image as Artifact
-          command: docker save node-js-sample | gzip > node-js-sample.tar.gz
-
-      - store_artifacts:
-          path: node-js-sample.tar.gz
-          destination: docker-image
+          name: Run Docker Container
+          command: docker run -d -p 3000:3000 --name node-js-container node-js-sample
 
 
 workflows:
