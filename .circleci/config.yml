@@ -34,7 +34,7 @@ jobs:
       - run:
           name: Test if Docker container is answering on the expected route
           command: |
-            docker exec node-js-container sh -c "curl -f http://localhost:3000 || (echo 'App did not respond correctly' && exit 1)"
+            curl -f http://localhost:3000 || (echo 'App did not respond correctly' && exit 1)"
 
 
 workflows:
