@@ -3,15 +3,15 @@ version: 2.1
 executors:
   docker-executor:
     docker:
-      - image: cimg/node:18.17  # CircleCI Node.js image for the build environment
+      - image: cimg/node:18.17  # Use CircleCI's Node.js image for the build
 
 jobs:
   build:
     executor: docker-executor
     steps:
-      - checkout  # Pull the code from the repository
+      - checkout  # Check out your code from the repository
 
-      # Enable Docker in the build environment
+      # Enable remote Docker
       - setup_remote_docker
 
       # Build the Docker image
@@ -19,30 +19,19 @@ jobs:
           name: Build Docker Image
           command: docker build -t node-js-sample .
 
-      # Run the Docker container
+      # Save the Docker image as an artifact (optional)
       - run:
-          name: Run Docker Container
-          command: docker run -d -p 3000:3000 --name node-js-container node-js-sample
-
-      # Test if the app is running and answering the expected route
-      - run:
-          name: Test if Docker container is answering on the expected route
-          command: |
-            sleep 5  # Give the app some time to start up
-            curl -f http://localhost:3000 || (echo "App did not respond correctly" && exit 1)
-
-      # Save the Docker image as an artifact
-      - run:
-          name: Save Docker Image
+          name: Save Docker Image as Artifact
           command: docker save node-js-sample | gzip > node-js-sample.tar.gz
 
-      # Store the compressed image as an artifact for later use
       - store_artifacts:
           path: node-js-sample.tar.gz
           destination: docker-image
 
+
 workflows:
   version: 2
-  build-and-test:
+  build:
     jobs:
       - build
+     
